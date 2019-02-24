@@ -9,6 +9,7 @@ import sap.cli.aunit
 
 from mock import Connection, Response
 from fixtures_adt import LOCK_RESPONSE_OK, EMPTY_RESPONSE_OK
+from fixtures_adt_aunit import AUNIT_NO_TEST_RESULTS_XML
 
 
 class TestAUnitWrite(unittest.TestCase):
@@ -20,7 +21,7 @@ class TestAUnitWrite(unittest.TestCase):
         self.assertEqual(str(cm.exception), 'Unknown type: foo')
 
     def test_aunit_program(self):
-        connection = Connection([Response(status_code=200, text='program unit tests results', headers={})])
+        connection = Connection([Response(status_code=200, text=AUNIT_NO_TEST_RESULTS_XML, headers={})])
 
         with patch('sap.cli.aunit.print') as mock_print:
             sap.cli.aunit.run(connection, SimpleNamespace(type='program', name='yprogram'))
@@ -30,7 +31,7 @@ class TestAUnitWrite(unittest.TestCase):
         mock_print.assert_called_once_with('program unit tests results')
 
     def test_aunit_class(self):
-        connection = Connection([Response(status_code=200, text='class unit tests results', headers={})])
+        connection = Connection([Response(status_code=200, text=AUNIT_NO_TEST_RESULTS_XML, headers={})])
 
         with patch('sap.cli.aunit.print') as mock_print:
             sap.cli.aunit.run(connection, SimpleNamespace(type='class', name='yclass'))
@@ -40,7 +41,7 @@ class TestAUnitWrite(unittest.TestCase):
         mock_print.assert_called_once_with('class unit tests results')
 
     def test_aunit_package(self):
-        connection = Connection([Response(status_code=200, text='package unit tests results', headers={})])
+        connection = Connection([Response(status_code=200, text=AUNIT_NO_TEST_RESULTS_XML, headers={})])
 
         with patch('sap.cli.aunit.print') as mock_print:
             sap.cli.aunit.run(connection, SimpleNamespace(type='package', name='ypackage'))
