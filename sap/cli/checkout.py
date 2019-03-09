@@ -15,7 +15,7 @@ def download_abap_source(object_name, source_object, typsfx):
     """Reads the text and saves it in the corresponding file"""
 
     filename = f'{object_name}{typsfx}.abap'
-    with open(filename, 'w') as dest:
+    with open(filename.lower(), 'w') as dest:
         dest.write(source_object.text)
 
 
