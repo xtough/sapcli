@@ -2,6 +2,16 @@
 
 from mock import Response
 
+
+PACKAGE_ROOT_REQUEST_XML = '''<?xml version="1.0" encoding="UTF-8"?>
+<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+<asx:values>
+<DATA>
+<TV_NODEKEY>000000</TV_NODEKEY>
+</DATA>
+</asx:values>
+</asx:abap>'''
+
 PACKAGE_ROOT_NODESTRUCTURE_XML = '''<?xml version="1.0" encoding="UTF-8"?><asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
     <DATA>
@@ -72,6 +82,17 @@ PACKAGE_ROOT_NODESTRUCTURE_XML = '''<?xml version="1.0" encoding="UTF-8"?><asx:a
 
 PACKAGE_ROOT_NODESTRUCTURE_OK_RESPONSE = Response(status_code=200, text=PACKAGE_ROOT_NODESTRUCTURE_XML, headers={
     'Content-Type': 'application/vnd.sap.as+xml; charset=utf-8; dataname=com.sap.adt.RepositoryObjectTreeContent'})
+
+PACKAGE_SOURCE_LIBRARY_REQUEST_XML = '''<?xml version="1.0" encoding="UTF-8"?>
+<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+<asx:values>
+<DATA>
+<TV_NODEKEY>000005</TV_NODEKEY>
+<TV_NODEKEY>000011</TV_NODEKEY>
+<TV_NODEKEY>000002</TV_NODEKEY>
+</DATA>
+</asx:values>
+</asx:abap>'''
 
 PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_XML = '''<?xml version="1.0" encoding="UTF-8"?><asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
@@ -176,4 +197,7 @@ PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_XML = '''<?xml version="1.0" encoding="UTF-
 '''
 
 PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_OK_RESPONSE = Response(status_code=200, text=PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_XML, headers={
+    'Content-Type': 'application/vnd.sap.as+xml; charset=utf-8; dataname=com.sap.adt.RepositoryObjectTreeContent'})
+
+PACKAGE_EMPTY_NODESTRUCTURE_OK_RESPONSE = Response(status_code=200, text=None, headers={
     'Content-Type': 'application/vnd.sap.as+xml; charset=utf-8; dataname=com.sap.adt.RepositoryObjectTreeContent'})

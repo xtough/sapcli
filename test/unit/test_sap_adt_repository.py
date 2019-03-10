@@ -7,7 +7,10 @@ import sap.adt
 
 from mock import Connection
 
-from fixtures_adt_repository import PACKAGE_ROOT_NODESTRUCTURE_OK_RESPONSE, PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_OK_RESPONSE
+from fixtures_adt_repository import (PACKAGE_ROOT_NODESTRUCTURE_OK_RESPONSE,
+                                     PACKAGE_ROOT_REQUEST_XML,
+                                     PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_OK_RESPONSE,
+                                     PACKAGE_SOURCE_LIBRARY_REQUEST_XML)
 
 
 class TestRepository(unittest.TestCase):
@@ -42,14 +45,7 @@ class TestRepository(unittest.TestCase):
     def test_read_node(self):
         node, connection = self.read_package_node([PACKAGE_ROOT_NODESTRUCTURE_OK_RESPONSE], None)
 
-        self.assertEqual(connection.execs[0].body, '''<?xml version="1.0" encoding="UTF-8"?>
-<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
-<asx:values>
-<DATA>
-<TV_NODEKEY>000000</TV_NODEKEY>
-</DATA>
-</asx:values>
-</asx:abap>''')
+        self.assertEqual(connection.execs[0].body, PACKAGE_ROOT_REQUEST_XML)
 
         self.assertEqual([vars(obj) for obj in node.objects],
                          [vars(SimpleNamespace(
@@ -86,18 +82,9 @@ class TestRepository(unittest.TestCase):
                           SimpleNamespace(OBJECT_TYPE='PROG/P', CATEGORY_TAG='source_library', OBJECT_TYPE_LABEL='Programs', NODE_ID='000002')])
 
     def test_read_node(self):
-        node, connection = self.read_package_node([PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_OK_RESPONSE], ('000011', '000005', '000002'))
+        node, connection = self.read_package_node([PACKAGE_SOURCE_LIBRARY_NODESTRUCUTRE_OK_RESPONSE], ('000005', '000011', '000002'))
 
-        self.assertEqual(connection.execs[0].body, '''<?xml version="1.0" encoding="UTF-8"?>
-<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
-<asx:values>
-<DATA>
-<TV_NODEKEY>000011</TV_NODEKEY>
-<TV_NODEKEY>000005</TV_NODEKEY>
-<TV_NODEKEY>000002</TV_NODEKEY>
-</DATA>
-</asx:values>
-</asx:abap>''')
+        self.assertEqual(connection.execs[0].body, PACKAGE_SOURCE_LIBRARY_REQUEST_XML)
 
         self.assertEqual([vars(obj) for obj in node.objects],
                          [vars(SimpleNamespace(
