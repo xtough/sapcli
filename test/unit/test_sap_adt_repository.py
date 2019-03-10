@@ -31,6 +31,15 @@ class TestRepository(unittest.TestCase):
              'parent_type': 'DEVC/K',
              'withShortDescriptions': 'false'})
 
+        self.assertEqual(connection.execs[0].body, '''<?xml version="1.0" encoding="UTF-8"?>
+<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+<asx:values>
+<DATA>
+<TV_NODEKEY>000000</TV_NODEKEY>
+</DATA>
+</asx:values>
+</asx:abap>''')
+
 
 if __name__ == '__main__':
     unittest.main()
