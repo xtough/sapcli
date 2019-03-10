@@ -1,5 +1,73 @@
 """ADT Repository wrappers"""
 
+from types import SimpleNamespace
+import xml.sax
+from xml.sax.handler import ContentHandler
+
+from sap import get_logger
+
+
+def mod_log():
+    """ADT Module logger"""
+
+    return get_logger()
+
+
+class NodeStructureXMLHandler(ContentHandler):
+    """Node Structure XML parser"""
+
+    def __init__(self):
+        super(NodeStructureXMLHandler, self).__init__()
+
+        self.tree_content = list()
+        self.categories = list()
+        self.object_types = list()
+
+        self._lists = {
+            'SEU_ADT_REPOSITORY_OBJ_NODE': self.tree_content,
+            'SEU_ADT_OBJECT_CATEGORY_INFO': self.categories,
+            'SEU_ADT_OBJECT_TYPE_INFO': self.object_types}
+
+        self._object = None
+        self._property = None
+
+    def startElement(self, name, attrs):
+        mod_log().debug('XML: start: %s', name)
+
+        if name in ['asx:abap', 'asx:values', 'DATA', 'TREE_CONTENT', 'CATEGORIES', 'OBJECT_TYPES']:
+            return
+
+        if name in self._lists.keys():
+            mod_log().debug('XML: new object: %s', name)
+            self._object = SimpleNamespace()
+        else:
+            mod_log().debug('XML: object property: %s', name)
+            self._property = name
+
+    def characters(self, content):
+        if self._property is None:
+            return
+
+        mod_log().debug('XML: object property value: %s', content)
+        setattr(self._object, self._property, content)
+
+    def endElement(self, name):
+        if name != self._property:
+            try:
+                self._lists[name].append(self._object)
+                mod_log().debug('XML: complete object: %s', name)
+                self._object = None
+            except KeyError:
+                pass
+        else:
+            if not hasattr(self._object, self._property):
+                mod_log().debug('XML: object property value: <empty>')
+                setattr(self._object, self._property, '')
+
+            self._property = None
+
+        mod_log().debug('XML: end: %s', name)
+
 
 def nodekeys_list_table(nodekeys):
     """Converts List of nodekeys to XML ABAP internal table"""
@@ -18,7 +86,7 @@ class Repository:
         """Returns node structure iterator"""
 
         keys = nodekeys_list_table(('000000',))
-        self._connection.execute(
+        resp = self._connection.execute(
             'POST',
             'repository/nodestructure',
             params={
@@ -35,3 +103,8 @@ class Repository:
 {keys}
 </asx:values>
 </asx:abap>''')
+
+        parser = NodeStructureXMLHandler()
+        xml.sax.parseString(resp.text, parser)
+
+        return SimpleNamespace(objects=parser.tree_content, types=parser.object_types, categories=parser.categories)
