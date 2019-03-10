@@ -108,6 +108,9 @@ class Repository:
 </asx:values>
 </asx:abap>''')
 
+        if not resp.text:
+            return SimpleNamespace(objects=[], types=[], categories=[])
+
         parser = NodeStructureXMLHandler()
         xml.sax.parseString(resp.text, parser)
 
