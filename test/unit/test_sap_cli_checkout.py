@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import sys
 from argparse import ArgumentParser
 import unittest
 from unittest.mock import Mock, PropertyMock, patch, mock_open, call
+from types import SimpleNamespace
 
 import sap.cli.checkout
 
@@ -75,6 +77,39 @@ class TestCheckout(unittest.TestCase):
             args.execute(Connection(), args)
 
         assert_wrote_file(self, fake_open, 'z_hello_world.prog.abap', 'REPORT z_hello_world')
+
+
+class TestCheckoutPackage(unittest.TestCase):
+
+    @patch('sap.cli.checkout.checkout_class')
+    @patch('sap.cli.checkout.checkout_interface')
+    @patch('sap.cli.checkout.checkout_program')
+    @patch('sap.adt.package.walk')
+    def test_checkout_package_simple(self, fake_walk, fake_prog, fake_intf, fake_clas):
+        conn = Connection([])
+
+        fake_walk.return_value = iter(
+            (([],
+              ['$VICTORY_TESTS'],
+              [SimpleNamespace(typ='INTF/OI', name='ZIF_HELLO_WORLD'),
+               SimpleNamespace(typ='CLAS/OC', name='ZCL_HELLO_WORLD'),
+               SimpleNamespace(typ='PROG/P', name='Z_HELLO_WORLD'),
+               SimpleNamespace(typ='7777/3', name='Magic Unicorn')]),
+             (['$VICTORY_TESTS'],
+              [],
+              [SimpleNamespace(typ='CLAS/OC', name='ZCL_TESTS')]))
+        )
+
+        args = parse_args(['package', '$VICTORY'])
+        with patch('sap.cli.checkout.print') as fake_print:
+            args.execute(conn, args)
+
+        fake_prog.assert_called_once_with(conn, 'Z_HELLO_WORLD')
+        fake_intf.assert_called_once_with(conn, 'ZIF_HELLO_WORLD')
+        fake_clas.assert_called_once_with(conn, 'ZCL_HELLO_WORLD')
+
+        self.assertEqual(fake_print.mock_calls, [call('Ignoring sub-package: $VICTORY_TESTS', file=sys.stderr),
+                                                 call('Unsupported object: 7777/3 Magic Unicorn', file=sys.stderr)])
 
 
 if __name__ == '__main__':
