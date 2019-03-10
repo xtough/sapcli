@@ -82,10 +82,14 @@ class Repository:
     def __init__(self, connection):
         self._connection = connection
 
-    def read_node(self, adt_object, withdescr=False):
+    def read_node(self, adt_object, withdescr=False, nodekeys=None):
         """Returns node structure iterator"""
 
-        keys = nodekeys_list_table(('000000',))
+        if nodekeys is None:
+            keys = nodekeys_list_table(('000000',))
+        else:
+            keys = nodekeys_list_table(nodekeys)
+
         resp = self._connection.execute(
             'POST',
             'repository/nodestructure',
